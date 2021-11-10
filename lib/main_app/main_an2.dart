@@ -1,17 +1,19 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 int _counter = 0;
 
-class MainFirstPage extends StatefulWidget {
-  const MainFirstPage({Key? key}) : super(key: key);
+class MainSecondPage extends StatefulWidget {
+  const MainSecondPage({Key? key}) : super(key: key);
 
   @override
-  State<MainFirstPage> createState() => _MainFirstPageState();
+  State<MainSecondPage> createState() => _MainSecondPageState();
 }
 
-class _MainFirstPageState extends State<MainFirstPage>
+class _MainSecondPageState extends State<MainSecondPage>
     with SingleTickerProviderStateMixin {
   AnimationController? _animationController;
   final double maxSlide = 225.0;
@@ -25,35 +27,35 @@ class _MainFirstPageState extends State<MainFirstPage>
     );
   }
 
-  // void toggle() {
-  //   _animationController!.isDismissed
-  //       ? _animationController!.forward()
-  //       : _animationController!.reverse();
-  // }
+  void toggle() {
+    _animationController!.isDismissed
+        ? _animationController!.forward()
+        : _animationController!.reverse();
+  }
 
   @override
   Widget build(BuildContext context) {
     var behindScreen = _MainBackScreen();
-    var myChild = _DrawableScreen(
-      animationController: _animationController!,
-    );
+    var myChild = _DrawableScreen();
     return Scaffold(
-      backgroundColor: Colors.blue,
-      body: AnimatedBuilder(
-        animation: _animationController!,
-        builder: (context, _) {
-          double slide = maxSlide * _animationController!.value;
-          double scale = 1 - (_animationController!.value * 0.3);
-          return Stack(children: [
-            behindScreen,
-            Transform(
-                transform: Matrix4.identity()
-                  ..translate(slide)
-                  ..scale(scale),
-                alignment: Alignment.centerLeft,
-                child: myChild),
-          ]);
-        },
+      body: GestureDetector(
+        // onHorizontalDragStart: _onDragStart,
+        onTap: toggle,
+        child: AnimatedBuilder(
+          animation: _animationController!,
+          builder: (context, _) {
+            double slide = maxSlide * _animationController!.value;
+            double scale = 1 - (_animationController!.value * 0.3);
+            return Stack(children: [
+              behindScreen,
+              Transform(
+                  transform: Matrix4.identity()
+                    ..rotateY(pi / 2 * _animationController!.value),
+                  alignment: Alignment.centerLeft,
+                  child: myChild),
+            ]);
+          },
+        ),
       ),
     );
   }
@@ -75,24 +77,28 @@ class _MainBackScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 200,
-      padding: const EdgeInsets.only(left: 10, top: 70),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Flutter Europe',
-              style: Theme.of(context)
-                  .textTheme
-                  .headline3
-                  ?.copyWith(color: Colors.white)),
-          //=========================================//
-          menuList('News', Icon(Icons.new_releases_sharp, color: Colors.white)),
-          menuList('Favourites', Icon(Icons.star, color: Colors.white)),
-          menuList('Map', Icon(Icons.map, color: Colors.white)),
-          menuList('Settings', Icon(Icons.settings, color: Colors.white)),
-          menuList('Profile', Icon(Icons.person, color: Colors.white)),
-        ],
+    return Scaffold(
+      backgroundColor: Colors.blue,
+      body: Container(
+        width: 200,
+        padding: const EdgeInsets.only(left: 10, top: 70),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Flutter Europe',
+                style: Theme.of(context)
+                    .textTheme
+                    .headline3
+                    ?.copyWith(color: Colors.white)),
+            //=========================================//
+            menuList(
+                'News', Icon(Icons.new_releases_sharp, color: Colors.white)),
+            menuList('Favourites', Icon(Icons.star, color: Colors.white)),
+            menuList('Map', Icon(Icons.map, color: Colors.white)),
+            menuList('Settings', Icon(Icons.settings, color: Colors.white)),
+            menuList('Profile', Icon(Icons.person, color: Colors.white)),
+          ],
+        ),
       ),
     );
   }
@@ -110,9 +116,8 @@ class _MainBackScreen extends StatelessWidget {
 
 //=================================================//
 class _DrawableScreen extends StatelessWidget {
-  _DrawableScreen({required this.animationController, Key? key})
-      : super(key: key);
-  AnimationController animationController;
+  _DrawableScreen({Key? key}) : super(key: key);
+  // AnimationController animationController;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -120,10 +125,10 @@ class _DrawableScreen extends StatelessWidget {
         leading: IconButton(
             icon: Icon(Icons.menu),
             onPressed: () {
-              toggle(animationController);
+              // toggle(animationController);
             }),
         centerTitle: true,
-        title: Text('Flutter Demo Home Page'),
+        title: Text('Flutter Demo 2 Page'),
       ),
       body: Center(
         child: Column(
@@ -147,9 +152,9 @@ class _DrawableScreen extends StatelessWidget {
     );
   }
 
-  static toggle(AnimationController animationController) {
-    animationController.isDismissed
-        ? animationController.forward()
-        : animationController.reverse();
-  }
+  // static toggle(AnimationController animationController) {
+  //   animationController.isDismissed
+  //       ? animationController.forward()
+  //       : animationController.reverse();
+  // }
 }

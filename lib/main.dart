@@ -1,4 +1,5 @@
 import 'package:animation_app/main_app/main_an1.dart';
+import 'package:animation_app/main_app/main_an2.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const MainFirstPage(),
+      home: const MainSecondPage(),
     );
   }
 }
