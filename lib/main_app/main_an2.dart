@@ -24,7 +24,7 @@ class _MainSecondPageState extends State<MainSecondPage>
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 450),
+      duration: Duration(milliseconds: 250),
     );
   }
 
