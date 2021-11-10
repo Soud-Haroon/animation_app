@@ -2,6 +2,7 @@
 
 import 'dart:math';
 
+import 'package:animation_app/main_app/main_an3.dart';
 import 'package:flutter/material.dart';
 
 int _counter = 0;
@@ -23,7 +24,7 @@ class _MainSecondPageState extends State<MainSecondPage>
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 250),
+      duration: Duration(milliseconds: 450),
     );
   }
 
@@ -33,38 +34,86 @@ class _MainSecondPageState extends State<MainSecondPage>
         : _animationController!.reverse();
   }
 
+  void toggleDrawable() {}
+
   @override
   Widget build(BuildContext context) {
     var behindScreen = _MainBackScreen();
     var myChild = _DrawableScreen();
     return Scaffold(
+      backgroundColor: Colors.grey[350],
       body: GestureDetector(
-        // onHorizontalDragStart: _onDragStart,
-        onTap: toggle,
+        onHorizontalDragStart: _onDragStart,
+        onHorizontalDragUpdate: _onDragUpdate,
+        onHorizontalDragEnd: _onDragEnd,
+        // onTap: toggle,
         child: AnimatedBuilder(
           animation: _animationController!,
           builder: (context, _) {
             double slide = maxSlide * _animationController!.value;
             double scale = 1 - (_animationController!.value * 0.3);
             return Stack(children: [
-              behindScreen,
-              Transform(
-                  transform: Matrix4.identity()
-                    ..rotateY(pi / 2 * _animationController!.value),
-                  alignment: Alignment.centerLeft,
-                  child: myChild),
+              // myChild,
+              Transform.translate(
+                offset: Offset(maxSlide * _animationController!.value, 0),
+                child: Transform(
+                  origin: Offset(-5,-15),
+                    transform: Matrix4.identity()
+                      ..setEntry(3, 2, 0.001)
+                      ..rotateY(-pi  * _animationController!.value / 2),
+                    alignment: Alignment.centerLeft,
+                    child: myChild),
+              ),
+              Transform.translate(
+                offset: Offset(maxSlide * (_animationController!.value - 1), 0),
+                child: Transform(
+                  origin: Offset(-190,20),
+                    transform: Matrix4.identity()
+                      ..setEntry(3, 2, 0.001)
+                      ..rotateY(pi / 2 * (1 - _animationController!.value)),
+                    alignment: Alignment.centerRight,
+                    child: behindScreen),
+              ),
             ]);
           },
         ),
       ),
     );
   }
-  //====================Void==========================//
 
-  // void _onDragStart(DragDownDetails details) {
-  //   bool isDragOpenFromLeft = _animationController!.isDismissed &&
-  //       details.globalPosition.dx < min;
-  // }
+  //====================Void==========================//
+  bool _canBeDragged = true;
+  void _onDragStart(DragStartDetails details) {
+    bool isDragOpenFromLeft =
+        _animationController!.isDismissed && details.globalPosition.dx < 200;
+    bool isDragOpenFromRight =
+        _animationController!.isCompleted && details.globalPosition.dx > 0;
+    //============================================================//
+    _canBeDragged = isDragOpenFromLeft || isDragOpenFromRight;
+  }
+
+  void _onDragUpdate(DragUpdateDetails details) {
+    if (_canBeDragged) {
+      double delta = details.primaryDelta! / maxSlide;
+      _animationController!.value += delta;
+    }
+  }
+
+  void _onDragEnd(DragEndDetails details) {
+    if (_animationController!.isDismissed ||
+        _animationController!.isCompleted) {
+      return;
+    }
+    if (details.velocity.pixelsPerSecond.dx.abs() >= 365) {
+      double visualVelocity = details.velocity.pixelsPerSecond.dx /
+          MediaQuery.of(context).size.width;
+      _animationController!.fling(velocity: visualVelocity);
+    } else if (_animationController!.value < 0.5) {
+      Icons.close;
+    } else {
+      Icons.star;
+    }
+  }
   // onHorizontalDragStart: _onDragStart,
   //     onHorizontalDragUpdate: _onDragUpdate,
   //     onHorizontalDragEnd: _onDragEnd,
@@ -78,21 +127,23 @@ class _MainBackScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue,
+      backgroundColor: Colors.transparent,
       body: Container(
-        width: 200,
+        color: Colors.blue,
         padding: const EdgeInsets.only(left: 10, top: 70),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Flutter Europe',
-                style: Theme.of(context)
-                    .textTheme
-                    .headline3
-                    ?.copyWith(color: Colors.white)),
+            SizedBox(
+              width: 215,
+              child: Text('Flutter Europe',
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline3
+                      ?.copyWith(color: Colors.white)),
+            ),
             //=========================================//
-            menuList(
-                'News', Icon(Icons.new_releases_sharp, color: Colors.white)),
+            menuList('News', Icon(Icons.new_releases_sharp, color: Colors.white)),
             menuList('Favourites', Icon(Icons.star, color: Colors.white)),
             menuList('Map', Icon(Icons.map, color: Colors.white)),
             menuList('Settings', Icon(Icons.settings, color: Colors.white)),
@@ -105,9 +156,12 @@ class _MainBackScreen extends StatelessWidget {
 
   Padding menuList(String text, Icon myIcon) {
     return Padding(
-      padding: const EdgeInsets.only(left: 5, top: 30, right: 50),
-      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+      padding: const EdgeInsets.only(left: 10,top: 20),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         myIcon,
+        SizedBox(width: 5),
         Text(text, style: TextStyle(color: Colors.white)),
       ]),
     );
@@ -145,7 +199,10 @@ class _DrawableScreen extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+                    Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => MainThirdPage()));
+        },
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
