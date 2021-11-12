@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unused_local_variable
 
 import 'dart:math';
 
@@ -170,7 +170,7 @@ class _MainBackScreen extends StatelessWidget {
 
 //=================================================//
 class _DrawableScreen extends StatelessWidget {
-  _DrawableScreen({Key? key}) : super(key: key);
+  const _DrawableScreen({Key? key}) : super(key: key);
   // AnimationController animationController;
   @override
   Widget build(BuildContext context) {
